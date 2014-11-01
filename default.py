@@ -108,24 +108,27 @@ def listSearchVideos(urlMain):
     xbmcplugin.setContent(pluginhandle, "episodes")
     try:
         content = getUrl(urlMain)
-        spl = content.split('<div class="video-block has-play"')
+        spl = content.split('has-play\'')
         for i in range(1, len(spl), 1):
             entry = spl[i]
-            match = re.compile('alt="(.+?)"', re.DOTALL).findall(entry)
+            match = re.compile('<h4>.+?<a href=\'.+?\'>\n(.+?) \| ARTE', re.DOTALL).findall(entry)
             title = cleanTitle(match[0])
+            # The search keyword is wrapped in <b> </b> in the tile, remove these
+            title = re.compile('<b>').sub('',title)
+            title = re.compile('</b>').sub('',title)
             match = re.compile('data-description="(.+?)"', re.DOTALL).findall(entry)
             desc = ""
             if match:
                 desc = cleanTitle(match[0])
-            match = re.compile('<p class="time-row">.+?<span class=".+?">.+?</span>(.+?)</p>.+?<p class=".+?">.+?<span class=".+?">.+?</span>(.+?)</p>', re.DOTALL).findall(entry)
+            match = re.compile('<p class=\'time-row\'>.+?<span class=\'.+?\'>.+?</span>(.+?) \((.+?)\).+?</p>', re.DOTALL).findall(entry)
             if match:
                 date = match[0][0].strip()
                 desc = date+"\n"+desc
                 duration = match[0][1].strip()
                 duration = duration.split(" ")[0]
-            match = re.compile('href="(.+?)"', re.DOTALL).findall(entry)
+            match = re.compile('href=\'(.+?)\'', re.DOTALL).findall(entry)
             url = match[0]
-            match = re.compile('src="(.+?)"', re.DOTALL).findall(entry)
+            match = re.compile('src=\'(.+?)\'', re.DOTALL).findall(entry)
             thumb = match[0]
             addLink(title, url, 'playVideoNew', thumb, desc, duration)
         currentPage = urlMain[urlMain.find("page=")+5:]
