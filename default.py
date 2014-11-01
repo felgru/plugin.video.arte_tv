@@ -140,9 +140,9 @@ def listSearchVideos(urlMain):
 
 def listCats(type, regionFilter):
     content = getUrl(baseUrl+"/guide/"+language+"/plus7")
-    content = content[content.find('<ul class="span12" data-filter="'+type+'">'):]
-    content = content[:content.find('</ul>')]
-    match = re.compile('<a href="(.+?)" data-controller="catchup" data-action="refresh" >(.+?)</a>', re.DOTALL).findall(content)
+    content = content[content.find('<div class=\'choice-'+type+' choices row\' data-filter=\''+type+'\'>'):]
+    content = content[:content.find('</div>\n</div>\n</div>')]
+    match = re.compile('<a class="ellipsis" data-action="refresh" data-controller="catchup" href="(.+?)">(.+?)</a>', re.DOTALL).findall(content)
     for url, title in match:
         title = cleanTitle(title)
         url = baseUrl+url.replace("?", ".json?").replace("&amp;", "&")+"&regions="+regionFilter
